@@ -4,7 +4,7 @@ from src.resources.user_profiles import fetch_user_profiles
 from src.tools.user_management import create_user_profile
 
 # Configure logging
-logging.basicConfig(
+logging.basicConfig( 
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
@@ -66,7 +66,12 @@ def main() -> None:
                 department: Department of the user (optional)
                 years_experience: Years of experience of the user
             """
-            return create_user_profile(name, role, department, years_experience)
+            return create_user_profile({
+                "name": name,
+                "role": role,
+                "department": department,
+                "years_experience": years_experience
+            })
 
         logger.info("Starting MCP server...")
         mcp.run()
@@ -76,6 +81,7 @@ def main() -> None:
         raise
 
 if __name__ == "__main__":
-    logger.info(f"Server running? Try http://localhost:8000 or check FastMCP for host/port setup")
+    for user in fetch_user_profiles():
+        print(user)
 
     main()

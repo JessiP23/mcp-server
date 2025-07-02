@@ -1,6 +1,7 @@
 from typing import Dict, Any, Optional
 from pydantic import BaseModel, Field, ValidationError
 import logging
+from src.resources.user_profiles import USER_PROFILES_DB, UserProfile
 
 logger = logging.getLogger("mcp_server.tools")
 
@@ -27,10 +28,19 @@ def create_user_profile(request_data: Dict[str, Any]) -> Dict[str, Any]:
 
         logger.info(f"Creating new user: {user_data.name} - {user_data.role} in {user_data.department}")
 
+        # Add new user to the in-memory database
+        new_user = UserProfile(
+            name=user_data.name,
+            role=user_data.role,
+            department=user_data.department or "General",
+            years_experience=user_data.years_experience
+        )
+        USER_PROFILES_DB.append(new_user)
+
         return {
             "status": "success",
             "message": f"User {user_data.name} created successfully",
-            "user": user_data.model_dump()
+            "user": new_user.model_dump()
         }
     except ValidationError as e:
         logger.error(f"Validation error: {e}")
